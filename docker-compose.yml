@@ -1,0 +1,15 @@
+services:
+  node:
+    container_name: node
+    build:
+      context: ./vue
+    restart: always
+#    depends_on:
+#      - mongo-server
+#    environment:
+#      - MONGO_DB_URI=mongodb://mongo-server/<db name>
+#      - REDIS_DB_URI=redis-server
+    volumes:
+      - ./vue/:/app
+    ports:
+      - 5000:5000
