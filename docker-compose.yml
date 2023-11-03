@@ -1,4 +1,43 @@
+version: "3"
+
 services:
+  api:
+    container_name: api
+    image: nginx
+    ports:
+      - "8090:80"
+    volumes:
+      - ./api/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./api/:/app
+
+  php:
+    container_name: php
+    build:
+      context: ./api
+    expose:
+      - 9000
+    volumes:
+      - ./api:/app
+
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-api}
+      # @todo change the password in production
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-!ChangeMe!}
+      - POSTGRES_USER=${POSTGRES_USER:-mono}
+    ports:
+      - "5432:5432"
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8877:8080"
+
   node:
     container_name: node
     build:
@@ -13,3 +52,14 @@ services:
       - ./vue/:/app
     ports:
       - 5000:5000
+
+  vue:
+    container_name: vue
+#    image: nginx
+    build:
+      context: ./vue
+    ports:
+      - "8080:8080"
+    volumes:
+#      - ./vue/dist:/usr/share/nginx/html
+      - ./vue/:/app
